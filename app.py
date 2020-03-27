@@ -54,6 +54,20 @@ def stations():
     df = pd.read_sql(stations.statement, engine)
     return(jsonify(df.to_dict(orient="records")))
 
+@app.route("/api/v1.0/tobs")
+def tobs():
+    latest_date = session.query(Measurement.date).order_by(Measurement.date.desc()).first()
+    format_str = "%Y-%m-%d"
+    latest_date = dt.datetime.strptime(latest_date[0], format_str)
+    year_ago = latest_date - dt.timedelta(days=365)
+
+    tobs = session.query(Measurement.date, Measurement.tobs).\
+        filter(Measurement.date >= year_ago.strftime(format_str))
+
+    df = pd.read_sql(tobs.statement, engine)
+
+    return(jsonify(df.to_dict(orient="records")))
+
 if __name__ == '__main__':
     app.run(debug=True)
 
