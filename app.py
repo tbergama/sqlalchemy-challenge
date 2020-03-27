@@ -28,10 +28,10 @@ def homepage():
     return (
         f"Available Routes:<br/>"
         f"/api/v1.0/precipitation<br/>"
-        f"/api/v1.0/stations<br/>"
-        f"/api/v1.0/stations<br/>"
-        f"/api/v1.0/&lt;start&gt;<br/>"
-        f"/api/v1.0/&lt;start&gt/&lt;end&gt;"
+        #f"/api/v1.0/stations<br/>"
+        #f"/api/v1.0/tobs<br/>"
+        #f"/api/v1.0/&lt;start&gt;<br/>"
+        #f"/api/v1.0/&lt;start&gt/&lt;end&gt;"
     )
 
 @app.route("/api/v1.0/precipitation")
@@ -47,6 +47,12 @@ def precipitation():
     df = pd.read_sql(precip.statement, engine).set_index("date")
     
     return jsonify(df.to_dict()['prcp'])
+
+@app.route("/api/v1.0/stations")
+def stations():
+    stations = session.query(Station)
+    df = pd.read_sql(stations.statement, engine)
+    return(jsonify(df.to_dict(orient="records")))
 
 if __name__ == '__main__':
     app.run(debug=True)
